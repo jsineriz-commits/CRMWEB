@@ -1,7 +1,6 @@
-// ---------------------------------------------------------
-// IMPORTANTE: PEGÁ AQUÍ LA URL DE IMPLEMENTACIÓN DE APPS SCRIPT
-// ---------------------------------------------------------
-const GAS_API_URL = "https://script.google.com/macros/s/SU_ID_AQUI/exec";
+// Backend Vercel serverless API routes
+const API_LEADS_URL  = '/api/leads';
+const API_UPDATE_URL = '/api/update';
 
 let todosLosLeads = [];
 let leadsFiltradosActuales = [];
@@ -64,7 +63,7 @@ function procesarIngreso() {
     document.getElementById('main-app').classList.remove('d-none');
     document.getElementById('loader').classList.remove('d-none');
   }
-  fetch(GAS_API_URL + "?action=getLeads&email=" + encodeURIComponent(email))
+  fetch(API_LEADS_URL + '?email=' + encodeURIComponent(email))
     .then(response => response.json())
     .then(data => { if (data.error) mostrarError(new Error(data.error)); else procesarDatosNuevos(data, email); })
     .catch(err => mostrarError(err));
@@ -235,7 +234,7 @@ function cambiarCarpetaColor(idLead, nuevoColor) {
   let leadGlobal=todosLosLeads.find(l=>String(l.id)===String(idLead));
   if(leadGlobal){leadGlobal.estado=nuevoEstado;leadGlobal.tsUltimo=new Date().getTime();}
   aplicarFiltros();
-  fetch(GAS_API_URL,{method:'POST',body:JSON.stringify({action:'actualizarEstado',leadId:idLead,nuevoEstado:nuevoEstado})})
+  fetch(API_UPDATE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leadId:idLead,nuevoEstado:nuevoEstado})})
     .then(res=>res.json())
     .then(res=>{document.getElementById('savingBadge').classList.add('d-none');document.getElementById('savingBadge').classList.remove('d-flex');if(!res.success)alert("Aviso al guardar: "+res.message);})
     .catch(err=>{document.getElementById('savingBadge').classList.add('d-none');document.getElementById('savingBadge').classList.remove('d-flex');alert("Error al comunicar: "+err.message);});

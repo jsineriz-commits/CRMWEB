@@ -1,0 +1,8 @@
+{
+  "name": "crm-web-decampoacampo",
+  "version": "1.0.0",
+  "description": "CRM Comercial De Campo a Campo - Vercel Serverless",
+  "dependencies": {
+    "googleapis": "^140.0.0"
+  }
+}

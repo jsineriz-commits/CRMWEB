@@ -1,49 +1,43 @@
 # CRM Web - De Campo a Campo
 
-CRM Comercial para gestión de leads, deployado en Vercel y conectado a Google Sheets vía Apps Script API.
+CRM Comercial deployado 100% en Vercel, con backend serverless que se conecta directo a Google Sheets via Service Account.
 
-## Estructura
+## Arquitectura
 
 ```
 CRMWEB/
-├── index.html      # Frontend (estructura HTML)
-├── styles.css      # Estilos CSS
-├── app.js          # Lógica JavaScript
-└── Code.gs         # Backend API en Google Apps Script (no va a Vercel)
+├── index.html          # Frontend (login + dashboard)
+├── styles.css          # Estilos CSS
+├── app.js              # Lógica JavaScript del frontend
+├── vercel.json         # Configuración Vercel
+└── api/
+    ├── _lib/
+    │   └── sheets.js   # Cliente Google Sheets API
+    ├── leads.js        # GET /api/leads?email=...
+    └── update.js       # POST /api/update
 ```
 
-## Setup
+## Variables de entorno en Vercel
 
-### 1. Configurar la API en Google Apps Script
+Configurar en Vercel → Settings → Environment Variables:
 
-1. Pegá el contenido de `Code.gs` en tu proyecto de Google Apps Script
-2. **Implementar** → **Nueva Implementación** → Tipo: **Aplicación Web**
-3. Ejecutar como: **"Yo (tu correo)"**
-4. Quién tiene acceso: **"Cualquier persona"**
-5. Hacé clic en **Implementar** y copiá la URL generada
+| Variable | Descripción |
+|---|---|
+| `GOOGLE_SERVICE_ACCOUNT_KEY` | JSON completo de la Service Account |
+| `CRM_SPREADSHEET_ID` | ID del spreadsheet CRM (Leads, Aux Cambio Estado) |
+| `KPI_SPREADSHEET_ID` | ID del spreadsheet KPI (KPI dCaC) |
 
-### 2. Conectar Vercel con Google
+## Setup Service Account
 
-Abrí `app.js` y reemplazá en la línea 3:
-```js
-const GAS_API_URL = "https://script.google.com/macros/s/SU_ID_AQUI/exec";
-```
-por la URL real de tu implementación.
+1. Ir a [Google Cloud Console](https://console.cloud.google.com)
+2. Crear proyecto → Habilitar **Google Sheets API**
+3. **IAM & Admin → Service Accounts → Crear**
+4. Descargar el JSON de credenciales
+5. Compartir los dos Spreadsheets con el email de la Service Account (rol: Editor)
+6. Pegar el JSON completo en la variable `GOOGLE_SERVICE_ACCOUNT_KEY`
 
-### 3. Deploy en Vercel
+## Deploy
 
-1. Subí `index.html`, `styles.css` y `app.js` a este repositorio
-2. En Vercel → **Add New Project** → seleccioná este repo → **Deploy**
-
-> ⚠️ `Code.gs` es solo para referencia. No se despliega en Vercel.
-
-## Usuarios Admin
-
-Los siguientes emails tienen acceso como administrador (vista completa + ranking):
-- sdewey@decampoacampo.com
-- arivas@decampoacampo.com
-- jsineriz@decampoacampo.com
-- ptaffarel@decampoacampo.com
-- jtonon@decampoacampo.com
-- asegobia@decampoacampo.com
-- lbortolin@decampoacampo.com
+1. Conectar repo en Vercel → Deploy
+2. Configurar las 3 variables de entorno
+3. Redeploy
