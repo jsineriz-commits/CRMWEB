@@ -8,8 +8,8 @@
 
 const { google } = require('googleapis');
 
-const CRM_SPREADSHEET_ID = process.env.CRM_SPREADSHEET_ID || '';
-const KPI_SPREADSHEET_ID = process.env.KPI_SPREADSHEET_ID || '';
+const CRM_SPREADSHEET_ID = (process.env.CRM_SPREADSHEET_ID || '').trim();
+const KPI_SPREADSHEET_ID = (process.env.KPI_SPREADSHEET_ID || '').trim();
 
 let _authClient = null;
 
