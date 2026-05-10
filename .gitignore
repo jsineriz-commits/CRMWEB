@@ -1,0 +1,10 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir al repo
+.env.local
+.env.*.local
+.env
+
+# Vercel
+.vercel

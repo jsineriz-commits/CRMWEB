@@ -16,15 +16,24 @@ let _authClient = null;
 async function getAuthClient() {
   if (_authClient) return _authClient;
   let credentials;
+
+  // Opción 1: JSON completo en GOOGLE_SERVICE_ACCOUNT_KEY
   const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
   if (rawKey && rawKey.trim().startsWith('{')) {
     credentials = JSON.parse(rawKey);
   } else {
-    const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || '';
+    // Opción 2: EMAIL + PRIVATE_KEY por separado (igual que proyecto Asignador)
+    const email = (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || '').trim();
     const privateKey = (process.env.GOOGLE_PRIVATE_KEY || '')
-      .trim().replace(/\\n/g, '\n').replace(/"/g, '');
-    credentials = { client_email: email.trim(), private_key: privateKey };
+      .trim()
+      .replace(/\\n/g, '\n')
+      .replace(/^"|"$/g, '');
+    if (!email || !privateKey) {
+      throw new Error('Credenciales de Google no configuradas. Verificá GOOGLE_SERVICE_ACCOUNT_KEY o GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_PRIVATE_KEY en Vercel.');
+    }
+    credentials = { client_email: email, private_key: privateKey };
   }
+
   const auth = new google.auth.GoogleAuth({
     credentials,
     scopes: [
